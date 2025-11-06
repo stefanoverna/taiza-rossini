@@ -1,9 +1,10 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-const colors = require('tailwindcss/colors');
+import defaultTheme from 'tailwindcss/defaultTheme'
+import colors from 'tailwindcss/colors'
+import typography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 
-module.exports = {
+export default {
   content: [
     "./src/**/*.{astro,html,js,jsx,ts,tsx}",
   ],
@@ -41,6 +42,6 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/typography'),
+    typography,
   ],
 }
