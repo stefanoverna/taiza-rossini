@@ -1,12 +1,30 @@
 ---
+import { graphql, readFragment, type FragmentOf } from '@/lib/graphql';
 import { Image } from '@datocms/astro';
 
+export const WorkFragment = graphql(/* GraphQL */ `
+  fragment WorkFragment on WorkRecord {
+    id
+    coverImage {
+      responsiveImage(imgixParams: { auto: format, h: 1400 }) {
+        src
+        srcSet
+        base64
+        width
+        height
+      }
+    }
+  }
+`);
+
 interface Props {
-  work: WorkType;
+  work: FragmentOf<typeof WorkFragment>;
   total: number;
 }
 
 const { work, total } = Astro.props;
+
+const unmaskedWork = readFragment(WorkFragment, work);
 ---
 
 <div class="relative" style="counter-increment: work-counter;">
@@ -14,7 +32,7 @@ const { work, total } = Astro.props;
     <Image
       imgClass="xl:w-auto xl:h-screen"
       imgStyle={{ height: null }}
-      data={work.coverImage.responsiveImage}
+      data={unmaskedWork.coverImage.responsiveImage}
     />
   </div>
   <div

@@ -2,46 +2,40 @@
 import Layout from '@/layouts/Layout.astro';
 import HorizontalScroller from '@/components/HorizontalScroller.astro';
 import Tile from '@/components/Tile.astro';
-import Work from '@/components/Work.astro';
+import Work, { WorkFragment } from '@/components/Work.astro';
 import { request } from '@/lib/dato';
 import { StructuredText } from '@datocms/astro';
 import { graphql } from '@/lib/graphql';
 
-const query = graphql(/* GraphQL */ `
-  query Home {
-    homepage {
-      _seoMetaTags {
-        tag
-        attributes
-        content
-      }
-      title
-      tagline {
-        value
-      }
-      description {
-        value
-      }
-    }
-
-    works: allWorks(orderBy: position_ASC, first: 100) {
-      id
-      coverImage {
-        responsiveImage(imgixParams: { auto: format, h: 1400 }) {
-          src
-          srcSet
-          base64
-          width
-          height
+const query = graphql(
+  /* GraphQL */ `
+    query Home {
+      homepage {
+        _seoMetaTags {
+          tag
+          attributes
+          content
+        }
+        title
+        tagline {
+          value
+        }
+        description {
+          value
         }
       }
-    }
 
-    meta: _allWorksMeta {
-      count
+      works: allWorks(orderBy: position_ASC, first: 100) {
+        ...WorkFragment
+      }
+
+      meta: _allWorksMeta {
+        count
+      }
     }
-  }
-`);
+  `,
+  [WorkFragment]
+);
 
 const {
   homepage,
