@@ -1,0 +1,161 @@
+---
+// No props needed for this component
+---
+
+<div class="lg:w-[25vw] lg:min-w-[450px] lg:max-w-[550px]">
+  <contact-form>
+    <div class="success-message mb-12 p-8 radius ring-4 ring-highlight hidden">
+      <div class="font-bold text-xl mb-3">
+        Thank you for reaching out! 🙏
+      </div>
+      <div>
+        I just received the message, and I will reply you as soon as
+        possible!
+      </div>
+    </div>
+
+    <form>
+      <div class="mb-6">
+        <label for="name" class="block mb-1 text-sm">
+          Your name*
+        </label>
+        <div>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Please insert your name"
+            required
+            class="w-full border rounded border-stone-300 focus:outline-none p-3 focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          />
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="email" class="block mb-1 text-sm">
+          Your email*
+        </label>
+        <div>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Please insert your email"
+            required
+            class="w-full border rounded border-stone-300 focus:outline-none p-3 focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          />
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="phoneNumber" class="block mb-1 text-sm">
+          Your phone number
+        </label>
+        <div>
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phoneNumber"
+            placeholder="Please insert your phone number"
+            class="w-full border rounded border-stone-300 focus:outline-none p-3 focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          />
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="message" class="block mb-1 text-sm">
+          Your message*
+        </label>
+        <div>
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Hi Taiza! I would like to..."
+            rows="3"
+            required
+            class="w-full border rounded resize-none border-stone-300 focus:outline-none p-3 focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          ></textarea>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="uppercase tracking-widest block w-full font-bold p-4 border bg-white border-stone-400 rounded-md drop-shadow focus:ring-2 ring-offset-2 ring-accent focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-stone-100 transition-opacity"
+      >
+        Send message
+      </button>
+    </form>
+  </contact-form>
+</div>
+
+<script>
+  import autosize from 'autosize';
+
+  class ContactForm extends HTMLElement {
+    connectedCallback() {
+      const form = this.querySelector('form');
+      const successMessage = this.querySelector('.success-message');
+      const submitButton = this.querySelector('button[type="submit"]');
+      const textarea = this.querySelector('textarea');
+
+      if (!form || !successMessage || !submitButton || !textarea) return;
+
+      // Initialize autosize on textarea
+      autosize(textarea);
+
+      // Handle form submission
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // HTML5 validation handles required fields and email format
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        const formData = new FormData(form);
+        const data: Record<string, string> = {};
+        formData.forEach((value, key) => {
+          data[key] = value.toString();
+        });
+
+        // Disable submit button during submission
+        submitButton.setAttribute('disabled', 'true');
+
+        try {
+          await fetch('https://submit-form.com/1W6wQG7Z', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          form.reset();
+          successMessage.classList.remove('hidden');
+
+          // Reset textarea size after form reset
+          autosize.update(textarea);
+
+          // Scroll to success message
+          successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (error) {
+          console.error('Form submission error:', error);
+          alert('There was an error sending your message. Please try again.');
+        } finally {
+          submitButton.removeAttribute('disabled');
+        }
+      });
+
+      // Clear success message when user starts typing again
+      const inputs = form.querySelectorAll('input, textarea');
+      inputs.forEach((input) => {
+        input.addEventListener('input', () => {
+          successMessage.classList.add('hidden');
+        });
+      });
+    }
+  }
+
+  customElements.define('contact-form', ContactForm);
+</script>

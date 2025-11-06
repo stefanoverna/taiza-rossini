@@ -1,0 +1,11 @@
+---
+import { StructuredText } from '@datocms/astro';
+
+interface Props {
+  data: any;
+}
+
+const { data } = Astro.props;
+---
+
+<StructuredText data={data} />

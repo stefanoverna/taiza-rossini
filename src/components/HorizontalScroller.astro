@@ -1,0 +1,75 @@
+---
+// HorizontalScroller Astro component
+---
+
+<horizontal-scroller
+  class="xl:fixed xl:inset-0 xl:overflow-x-auto xl:flex xl:items-stretch"
+>
+  <slot />
+</horizontal-scroller>
+
+<script>
+  class HorizontalScroller extends HTMLElement {
+    private mediaQuery: MediaQueryList | null = null;
+    private onWheelHandler: ((e: WheelEvent) => void) | null = null;
+
+    connectedCallback() {
+      // Set up media query listener for (min-width: 1024px)
+      this.mediaQuery = window.matchMedia('(min-width: 1024px)');
+
+      // Initialize horizontal scroll behavior based on current media query
+      this.handleMediaChange();
+
+      // Listen for media query changes
+      this.mediaQuery.addEventListener('change', () =>
+        this.handleMediaChange()
+      );
+    }
+
+    disconnectedCallback() {
+      // Clean up event listeners when component is removed
+      if (this.mediaQuery) {
+        this.mediaQuery.removeEventListener('change', () =>
+          this.handleMediaChange()
+        );
+      }
+      this.removeWheelListener();
+    }
+
+    private handleMediaChange() {
+      if (this.mediaQuery && this.mediaQuery.matches) {
+        // Enable horizontal scroll on large screens
+        this.addWheelListener();
+      } else {
+        // Disable horizontal scroll on smaller screens
+        this.removeWheelListener();
+      }
+    }
+
+    private addWheelListener() {
+      if (this.onWheelHandler) return; // Already added
+
+      this.onWheelHandler = (e: WheelEvent) => {
+        if (e.deltaY === 0) return;
+
+        e.preventDefault();
+
+        this.scrollTo({
+          left: this.scrollLeft + e.deltaY,
+        });
+      };
+
+      this.addEventListener('wheel', this.onWheelHandler);
+    }
+
+    private removeWheelListener() {
+      if (this.onWheelHandler) {
+        this.removeEventListener('wheel', this.onWheelHandler);
+        this.onWheelHandler = null;
+      }
+    }
+  }
+
+  // Register the custom element
+  customElements.define('horizontal-scroller', HorizontalScroller);
+</script>

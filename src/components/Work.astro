@@ -1,0 +1,28 @@
+---
+import { Image } from '@datocms/astro';
+import type { Work as WorkType } from '@/lib/types';
+
+interface Props {
+  work: WorkType;
+  total: number;
+}
+
+const { work, total } = Astro.props;
+---
+
+<div class="relative" style="counter-increment: work-counter;">
+  <div class="xl:px-10 xl:h-screen">
+    <Image
+      imgClass="xl:w-auto xl:h-screen"
+      imgStyle={{ height: null }}
+      data={work.coverImage.responsiveImage}
+    />
+  </div>
+  <div
+    class="hidden xl:flex absolute z-10 bottom-[250px] left-0 -rotate-90 origin-top-left items-center text-black"
+  >
+    <div class="before:content-[counter(work-counter)]"></div>
+    <div class="h-[2px] w-[100px] mx-2 bg-black"></div>
+    <div>{total}</div>
+  </div>
+</div>

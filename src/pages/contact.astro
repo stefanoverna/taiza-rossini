@@ -1,0 +1,65 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { StructuredText } from '@datocms/astro';
+import ContactForm from '@/components/ContactForm.astro';
+import WhatsappIcon from '@/components/WhatsappIcon.astro';
+import { request } from '@/lib/dato';
+import type { ContactQuery } from '@/lib/types';
+
+const query = `
+  query Contact {
+    contact {
+      _seoMetaTags {
+        tag
+        attributes
+        content
+      }
+      kicker
+      title
+      content {
+        value
+      }
+    }
+  }
+`;
+
+const { contact } = await request<ContactQuery>(query);
+
+if (!contact) {
+  return Astro.redirect('/');
+}
+---
+
+<Layout seoTags={contact._seoMetaTags}>
+  <main class="lg:fixed lg:inset-0 lg:flex lg:items-center lg:justify-center">
+    <div class="mx-7 py-12 max-w-[700px] lg:m-0 lg:pr-32 lg:box-border">
+      <div>
+        <div class="uppercase tracking-widest text-sm mb-12 xl:mb-12">
+          {contact.kicker}
+        </div>
+        <h1
+          class="text-black font-serif mb-12 text-5xl lg:text-7xl tracking-tight"
+        >
+          {contact.title}
+        </h1>
+        <div class="prose max-w-none">
+          <StructuredText data={contact.content.value} />
+        </div>
+        <div class="mt-5">
+          <a
+            href="https://wa.me/message/22R7RKDSMVMYC1"
+            class="w-full font-bold flex space-x-4 items-center text-[#128c7e] underline underline-offset-2 decoration-[#128c7e]"
+          >
+            <WhatsappIcon class="w-[2em]" />
+            <span>Send me a WhatsApp message</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mx-7 py-12 lg:mx-0 lg:py-0 lg:flex lg:items-center lg:justify-center"
+    >
+      <ContactForm />
+    </div>
+  </main>
+</Layout>

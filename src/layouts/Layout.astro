@@ -1,0 +1,67 @@
+---
+import { Seo } from '@datocms/astro';
+import NavigationMenu from '@/components/NavigationMenu.astro';
+import '@/styles/globals.css';
+import { request } from '@/lib/dato';
+import type { LayoutQuery } from '@/lib/types';
+
+const query = `
+  query Layout {
+    site: _site {
+      faviconMetaTags {
+        tag
+        attributes
+        content
+      }
+    }
+    homepage {
+      accentColor {
+        red
+        green
+        blue
+      }
+      highlightColor {
+        red
+        green
+        blue
+      }
+    }
+  }
+`;
+
+const { homepage, site } = await request<LayoutQuery>(query);
+
+function colorToRule(color: { red: number; green: number; blue: number }) {
+  return `${color.red} ${color.green} ${color.blue}`;
+}
+
+interface Props {
+  seoTags?: any[];
+}
+
+const { seoTags } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <Seo data={site.faviconMetaTags} />
+    {seoTags && <Seo data={seoTags} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+  </head>
+  <body
+    class="font-sans overflow-x-hidden text-gray"
+    style={{
+      '--color-accent': homepage ? colorToRule(homepage.accentColor) : '',
+      '--color-highlight': homepage ? colorToRule(homepage.highlightColor) : '',
+      '--font-poppins': 'Poppins, sans-serif',
+      '--font-playfair-display': 'Playfair Display, serif',
+    }}
+  >
+    <NavigationMenu />
+    <slot />
+  </body>
+</html>

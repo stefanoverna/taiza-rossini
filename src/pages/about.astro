@@ -1,0 +1,87 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Image, StructuredText } from '@datocms/astro';
+import { request } from '@/lib/dato';
+import type { AboutQuery } from '@/lib/types';
+
+const query = `
+  query About {
+    about {
+      _seoMetaTags {
+        tag
+        attributes
+        content
+      }
+
+      kicker
+      title
+      subtitle {
+        value
+      }
+      content {
+        value
+      }
+      signature {
+        url
+      }
+      image {
+        focalPoint {
+          x
+          y
+        }
+        responsiveImage(imgixParams: { auto: format, h: 1400 }) {
+          src
+          srcSet
+          base64
+          width
+          height
+        }
+      }
+    }
+  }
+`;
+
+const { about } = await request<AboutQuery>(query);
+
+if (!about) {
+  return Astro.redirect('/');
+}
+---
+
+<Layout seoTags={about._seoMetaTags}>
+  <main>
+    <div
+      class="mx-7 py-12 max-w-[800px] xl:m-0 lg:w-[55vw] 2xl:w-[50vw] lg:max-w-[1100px] xl:p-32 overflow-auto xl:box-border"
+    >
+      <div>
+        <div class="uppercase tracking-widest text-sm mb-12 xl:mb-12 xl:mt-16">
+          {about.kicker}
+        </div>
+        <h1
+          class="text-black font-serif mb-12 text-5xl xl:text-7xl tracking-tight"
+        >
+          {about.title}
+        </h1>
+        <div class="text-xl mb-12 leading-loose">
+          <StructuredText data={about.subtitle.value} />
+        </div>
+        <div class="prose max-w-none">
+          <StructuredText data={about.content.value} />
+        </div>
+      </div>
+      <div class="mt-10 flex">
+        <img src={about.signature.url} alt="Signature" style="width: 100px;" />
+      </div>
+    </div>
+    <div class="hidden xl:block fixed inset-0 left-auto w-[45vw] 2xl:w-[50vw]">
+      <Image
+        class="w-full h-full object-cover"
+        data={about.image.responsiveImage}
+        style={`object-position: left ${about.image.focalPoint.x * 100}% top ${about.image.focalPoint.y * 100}%;`}
+      />
+    </div>
+    <div class="xl:hidden">
+      <Image data={about.image.responsiveImage} />
+    </div>
+  </main>
+</Layout>
