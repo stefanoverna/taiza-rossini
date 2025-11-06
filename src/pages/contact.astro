@@ -4,9 +4,9 @@ import { StructuredText } from '@datocms/astro';
 import ContactForm from '@/components/ContactForm.astro';
 import WhatsappIcon from '@/components/WhatsappIcon.astro';
 import { request } from '@/lib/dato';
-import type { ContactQuery } from '@/lib/types';
+import { graphql } from '@/lib/graphql';
 
-const query = `
+const query = graphql(/* GraphQL */ `
   query Contact {
     contact {
       _seoMetaTags {
@@ -21,9 +21,9 @@ const query = `
       }
     }
   }
-`;
+`);
 
-const { contact } = await request<ContactQuery>(query);
+const { contact } = await request(query, {});
 
 if (!contact) {
   return Astro.redirect('/');

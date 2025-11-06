@@ -2,13 +2,12 @@
 import Layout from '@/layouts/Layout.astro';
 import HorizontalScroller from '@/components/HorizontalScroller.astro';
 import Tile from '@/components/Tile.astro';
-import UnwrapStructuredText from '@/components/UnwrapStructuredText.astro';
 import Work from '@/components/Work.astro';
 import { request } from '@/lib/dato';
-import type { HomeQuery } from '@/lib/types';
 import { StructuredText } from '@datocms/astro';
+import { graphql } from '@/lib/graphql';
 
-const query = `
+const query = graphql(/* GraphQL */ `
   query Home {
     homepage {
       _seoMetaTags {
@@ -42,13 +41,13 @@ const query = `
       count
     }
   }
-`;
+`);
 
 const {
   homepage,
   works,
   meta: { count },
-} = await request<HomeQuery>(query);
+} = await request(query, {});
 ---
 
 <Layout seoTags={homepage?._seoMetaTags || []}>

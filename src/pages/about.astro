@@ -2,9 +2,9 @@
 import Layout from '@/layouts/Layout.astro';
 import { Image, StructuredText } from '@datocms/astro';
 import { request } from '@/lib/dato';
-import type { AboutQuery } from '@/lib/types';
+import { graphql } from '@/lib/graphql';
 
-const query = `
+const query = graphql(/* GraphQL */ `
   query About {
     about {
       _seoMetaTags {
@@ -39,9 +39,9 @@ const query = `
       }
     }
   }
-`;
+`);
 
-const { about } = await request<AboutQuery>(query);
+const { about } = await request(query, {});
 
 if (!about) {
   return Astro.redirect('/');
@@ -75,9 +75,9 @@ if (!about) {
     </div>
     <div class="hidden xl:block fixed inset-0 left-auto w-[45vw] 2xl:w-[50vw]">
       <Image
-        class="w-full h-full object-cover"
+        imgClass="w-full h-full object-cover"
         data={about.image.responsiveImage}
-        style={`object-position: left ${about.image.focalPoint.x * 100}% top ${about.image.focalPoint.y * 100}%;`}
+        imgStyle={`object-position: left ${about.image.focalPoint.x * 100}% top ${about.image.focalPoint.y * 100}%;`}
       />
     </div>
     <div class="xl:hidden">
