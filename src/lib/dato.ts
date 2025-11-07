@@ -12,6 +12,8 @@ export async function request<Result, Variables>(
   return executeQueryWithAutoPagination(query, {
     ...options,
     excludeInvalid: true,
+    contentLink: 'vercel-v1',
+    baseEditingUrl: 'https://taiza-rossini.admin.datocms.com',
     token: DATOCMS_API_TOKEN,
   });
 }
